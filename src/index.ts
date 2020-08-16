@@ -96,7 +96,7 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
 });
 
 // Matches "/unwatch 0x..."
-bot.onText(/\/watch (.+)/, (msg, match) => {
+bot.onText(/\/unwatch (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   if (match === null) {
     bot.sendMessage(

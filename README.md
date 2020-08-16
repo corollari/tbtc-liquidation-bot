@@ -1,5 +1,13 @@
-# Liquidation Bot for tBTC
-> Telegram pubsub bot that notifies you whenever any of your deposits may be liquidated
+<h1 align="center">
+  Liquidation Bot for tBTC
+  <br>
+</h1>
+
+<h4 align="center">Telegram pubsub bot that notifies you whenever any of your deposits may be liquidated</h4>
+
+<p align="center">
+  <img src="./screenshot.png">
+</p>
 
 ## Using it
 The simplest way of trying it out is to just start a chat with [@tbtc\_liquidations\_bot](t.me/tbtc_liquidations_bot) on Telegram, the bot will reply with further instructions on how to subscribe to undercollateralization alerts.
