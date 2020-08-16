@@ -101,23 +101,29 @@ bot.onText(/\/watch (.+)/, (msg, match) => {
 });
 
 const instructions = `
-\\watch {deposit_address} - Subscribe to undercollateralization alerts from a deposit
-eg: \\watch 0xC309D0C7DC827ea92e956324F1e540eeA6e1AEaa
-\\unwatch {deposit_address} - Unsubscribe to undercollateralization alerts from a deposit
-eg: \\unwatch 0xC309D0C7DC827ea92e956324F1e540eeA6e1AEaa
+/watch {deposit_address} - Subscribe to undercollateralization alerts from a deposit
+eg: /watch 0xC309D0C7DC827ea92e956324F1e540eeA6e1AEaa
+/unwatch {deposit_address} - Unsubscribe to undercollateralization alerts from a deposit
+eg: /unwatch 0xC309D0C7DC827ea92e956324F1e540eeA6e1AEaa
 `
-bot.onText(/\\start/, (msg) => {
-  bot.sendMessage(msg.chat.id, `Hey there :)
-  Please use the following instructions to communicate with me:
-  ${instructions}`)
+bot.onText(/\/start/, (msg) => {
+  bot.sendMessage(msg.chat.id, `
+Hey there :)
+Please use the following instructions to communicate with me:
+${instructions}`)
 })
 
-bot.on('message', (msg) => {
+bot.onText(/(.*)/, (msg, match) => {
+  const command = match![1].toString()
+  if(command.includes('\/start') || command.includes('\/watch') || command.includes('\/unwatch')){
+    return
+  }
+
   const chatId = msg.chat.id;
- 
-  bot.sendMessage(chatId, `Hey there :)
-  I didn't understand your command, could you please rephrase it using one of the following commands?
-  ${instructions}`);
+  bot.sendMessage(chatId, `
+Hey there :)
+I didn't understand your command, could you please rephrase it using one of the following commands?
+${instructions}`);
 });
 
 const interval = 10*60*1000 // 10 minutes
@@ -137,9 +143,10 @@ const iterateNext = (_:Error|null, [cursor, keys]:[string, string[]])=>{
       if(currentCollat < courtesyThreshold){
         redisClient.smembers(key, (_, subscribers)=>{
           subscribers.forEach(sub=>{
-            bot.sendMessage(Number(sub), `Deposit with address ${key} has entered the courtesy call state, action is required in the next 6 hours to prevent liquidation. See https://docs.keep.network/tbtc/index.html#pre-liquidation
-            You have been automatically unsubscribed from this deposit in order avoid duplication of messages, if you'd like to subscribe again just send the following command:
-            \\watch ${key}`)
+            bot.sendMessage(Number(sub), `
+Deposit with address ${key} has entered the courtesy call state, action is required in the next 6 hours to prevent liquidation. See https://docs.keep.network/tbtc/index.html#pre-liquidation
+You have been automatically unsubscribed from this deposit in order avoid duplication of messages, if you'd like to subscribe again just send the following command:
+/watch ${key}`)
           })
           redisClient.del(key)
         })
