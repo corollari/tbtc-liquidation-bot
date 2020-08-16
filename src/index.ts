@@ -31,7 +31,7 @@ const tbtc = TBTC.withConfig({
 let token = process.env.TELEGRAM_TOKEN;
 if (token === undefined) {
   console.log("Couldn't find 'TELEGRAM_TOKEN' on the environment variables");
-  token = "1285844041:AAG-DbgLMbJB05uvO_-ZW6vwhF-kJBTRoK4";
+  token = "";
 }
 // const port = process.env["PORT"] ?? 8000;
 const redisUrl = process.env.REDIS_URL;

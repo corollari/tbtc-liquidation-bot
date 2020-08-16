@@ -16,7 +16,7 @@ This project uses the standards widely known on the javascript community:
 ```
 npm install # Install dependencies
 npm run patch-tbtc # Transpile tbtc package
-npm run build # Compile typescript code
+npm run build # Compile typescript code & apply transpilations
 npm run lint # Lint & format code
 npm start # Start the bot
 ```

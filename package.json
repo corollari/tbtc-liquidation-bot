@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "patch-tbtc": "babel --plugins @babel/plugin-transform-modules-commonjs node_modules/@keep-network/tbtc.js/ -d node_modules/@keep-network/tbtc.js/ && sed -i -e 's/  \"type\": \"module\",//' node_modules/@keep-network/tbtc.js/package.json",
-    "build": "tsc",
+    "build": "tsc && npm run patch-tbtc",
     "lint": "eslint src --ext ts --no-ignore --fix && prettier --write \"src/**/*.ts\"",
     "start": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
