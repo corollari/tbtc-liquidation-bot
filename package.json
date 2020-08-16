@@ -1,0 +1,30 @@
+{
+  "name": "tbtc-liquidation-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node -r esm build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "corollari",
+  "license": "MIT",
+  "dependencies": {
+    "@keep-network/tbtc.js": "^0.18.0-rc.1",
+    "@types/node-telegram-bot-api": "^0.50.2",
+    "@types/redis": "^2.8.25",
+    "esm": "^3.2.25",
+    "node-telegram-bot-api": "^0.50.0",
+    "redis": "^3.0.2",
+    "web3": "^1.2.11"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
+}

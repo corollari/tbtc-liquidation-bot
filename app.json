@@ -1,0 +1,17 @@
+{
+  "name": "Liquidation Bot for tBTC",
+  "description": "Telegram pubsub bot that notifies you whenever any of your deposits may be liquidated",
+  "keywords": [
+    "tbtc"
+  ],
+
+  "repository": "https://github.com/corollari/tbtc-liquidation-bot",
+  "env": {
+    "TELEGRAM_TOKEN": {
+      "description": "Secret token of your telegram bot"
+    }
+  },
+  "addons": [
+    "heroku-redis:hobby-dev"
+  ]
+}
