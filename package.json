@@ -6,6 +6,7 @@
   "scripts": {
     "patch-tbtc": "babel --plugins @babel/plugin-transform-modules-commonjs node_modules/@keep-network/tbtc.js/ -d node_modules/@keep-network/tbtc.js/ && sed -i -e 's/  \"type\": \"module\",//' node_modules/@keep-network/tbtc.js/package.json",
     "build": "tsc",
+    "lint": "eslint src --ext ts --no-ignore --fix && prettier --write \"src/**/*.ts\"",
     "start": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +17,7 @@
     "@keep-network/tbtc.js": "^0.18.0-rc.1",
     "@types/node-telegram-bot-api": "^0.50.2",
     "@types/redis": "^2.8.25",
+    "bn.js": "^5.1.3",
     "node-telegram-bot-api": "^0.50.0",
     "redis": "^3.0.2",
     "web3": "^1.2.11"
@@ -27,6 +29,13 @@
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.4",
     "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0",
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "prettier": "^2.0.5",
     "typescript": "^3.9.5"
   }
 }

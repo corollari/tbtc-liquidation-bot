@@ -14,6 +14,9 @@ The easiest way to host your own bot (improved privacy, no need to trust me, inc
 ## Development
 This project uses the standards widely known on the javascript community:
 ```
+npm install # Install dependencies
+npm run patch-tbtc # Transpile tbtc package
 npm run build # Compile typescript code
+npm run lint # Lint & format code
 npm start # Start the bot
 ```
