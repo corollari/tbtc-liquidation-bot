@@ -89,7 +89,7 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
     } else {
       bot.sendMessage(
         chatId,
-        `Your deposit has been registered, we will send you an update if it ever fails below the first threshold (where it could get courtesy-called).`
+        `Your deposit has been registered, we will send you an update if it ever falls below the first threshold (where it could get courtesy-called).`
       );
     }
   });
