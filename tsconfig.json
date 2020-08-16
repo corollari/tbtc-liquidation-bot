@@ -1,15 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "strict": true,  
-    "module": "ES6",
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
     "esModuleInterop": true,
-    "skipLibCheck": false, 
-    "outDir": "build",
-    "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "declarationDir": "dist/types",
     "declaration": true,
-    "noUnusedParameters": true
+    "target": "es5",
+    "strict": true
   },
-  "exclude": ["node_modules", "build"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

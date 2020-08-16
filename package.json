@@ -2,10 +2,14 @@
   "name": "tbtc-liquidation-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "build/index.js",
+  "main": "dist/bundle.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node -r esm build/index.js",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "webpack --mode=production",
+    "build": "npm run build:types && npm run build:js",
+    "start": "node dist/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,7 +19,7 @@
     "@keep-network/tbtc.js": "^0.18.0-rc.1",
     "@types/node-telegram-bot-api": "^0.50.2",
     "@types/redis": "^2.8.25",
-    "esm": "^3.2.25",
+    "electron": "^9.2.0",
     "node-telegram-bot-api": "^0.50.0",
     "redis": "^3.0.2",
     "web3": "^1.2.11"
@@ -23,8 +27,19 @@
   "engines": {
     "node": "12.x"
   },
-  "type": "module",
   "devDependencies": {
-    "typescript": "^3.9.7"
+    "@babel/core": "7.10.4",
+    "@babel/plugin-proposal-class-properties": "7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "7.10.4",
+    "@babel/preset-env": "7.10.4",
+    "@babel/preset-typescript": "7.10.4",
+    "babel-loader": "8.1.0",
+    "fork-ts-checker-webpack-plugin": "5.0.5",
+    "typescript": "3.9.5",
+    "webpack": "4.43.0",
+    "webpack-cli": "3.3.12"
+  },
+  "resolutions": {
+    "terser": "3.14.1"
   }
 }
