@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "strict": true,  
     "esModuleInterop": true,
     "allowJs":true,
+    "moduleResolution": "node",
     "skipLibCheck": false, 
     "outDir": "build",
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "declaration": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "maxNodeModuleJsDepth": 2
   },
   "exclude": ["node_modules", "build"]
 }
