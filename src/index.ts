@@ -56,7 +56,7 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
   if (match === null) {
     bot.sendMessage(
       chatId,
-      "You must provide the ethereum address of the deposit to watch"
+      "You must provide the ethereum address of the deposit/TBT ID to watch"
     );
     return;
   }
@@ -74,7 +74,7 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
   } catch (e) {
     bot.sendMessage(
       chatId,
-      "The address provided does not correspond to a tbtc deposit, please try again with a different address"
+      "The address provided does not correspond to a tbtc deposit, aka it's not a correct TBT ID, please try again with a different address"
     );
     return;
   }
