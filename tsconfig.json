@@ -9,7 +9,8 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedLocals": true,
     "declaration": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "lib":["ES5"]
   },
   "exclude": ["node_modules", "build"]
 }

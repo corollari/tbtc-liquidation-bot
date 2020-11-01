@@ -9,6 +9,9 @@
   "env": {
     "TELEGRAM_TOKEN": {
       "description": "Secret token of your telegram bot"
+    },
+    "INFURA_TOKEN": {
+      "description": "Infura secret token"
     }
   },
   "addons": [

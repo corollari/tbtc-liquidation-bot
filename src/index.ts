@@ -2,11 +2,11 @@ import TelegramBot from "node-telegram-bot-api";
 import redis from "redis";
 import TBTC from "@keep-network/tbtc.js";
 import Web3 from "web3";
+import fetch from "node-fetch";
 
-// Project id should be hidden but whatever, I have a free account that is worthless
 const web3 = new Web3(
   new Web3.providers.HttpProvider(
-    "https://ropsten.infura.io/v3/c11f7905ecda426f9e3db0121b99ebc2"
+    `https://mainnet.infura.io/v3/${process.env.INFURA_TOKEN}`
   )
 );
 
@@ -28,10 +28,11 @@ const tbtc = TBTC.withConfig({
 });
 
 // Telegram token obtained from @BotFather
-let token = process.env.TELEGRAM_TOKEN;
+const token = process.env.TELEGRAM_TOKEN;
 if (token === undefined) {
-  console.log("Couldn't find 'TELEGRAM_TOKEN' on the environment variables");
-  token = "";
+  throw new Error(
+    "Couldn't find 'TELEGRAM_TOKEN' on the environment variables"
+  );
 }
 // const port = process.env["PORT"] ?? 8000;
 const redisUrl = process.env.REDIS_URL;
@@ -48,6 +49,33 @@ redisClient.on("error", (error) => {
   console.error(error);
 });
 
+async function getDepositsBySigner(signerAddress: string) {
+  let deposits = await fetch(
+    "https://api.thegraph.com/subgraphs/name/suntzu93/tbtc",
+    {
+      method: "POST",
+      body: `{"query":"{\n  members(where: {id: "${signerAddress}"}) {\n    id\n    bondedECDSAKeeps {\n      owner\n      state\n    }\n  }\n}\n"}`,
+    }
+  )
+    .then((res) => res.json())
+    .then(
+      (res: {
+        data: {
+          members: [
+            {
+              bondedECDSAKeeps: {
+                owner: string; // eg: "0xf878d609a230303f6153bda059e03970d4b204fc",
+                state: string; // eg: "ACTIVE"
+              }[];
+            }
+          ];
+        };
+      }) => res.data.members[0].bondedECDSAKeeps
+    );
+  deposits = deposits.filter((deposit) => deposit.state === "ACTIVE");
+  return deposits.map((depo) => depo.owner);
+}
+
 const bot = new TelegramBot(token, { polling: true });
 
 // Matches "/watch 0x..."
@@ -56,7 +84,7 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
   if (match === null) {
     bot.sendMessage(
       chatId,
-      "You must provide the ethereum address of the deposit/TBT ID to watch"
+      "You must provide the ethereum address of the signer to watch"
     );
     return;
   }
@@ -70,29 +98,35 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
     return;
   }
   try {
-    await (await tbtc).Deposit.withAddress(address);
+    const deposits = await getDepositsBySigner(address);
+    if (deposits.length === 0) {
+      throw new Error();
+    }
+    deposits.forEach((deposit) => {
+      // See https://redis.io/commands/sadd
+      redisClient.sadd(deposit, String(chatId), (err, res) => {
+        if (err) {
+          bot.sendMessage(chatId, `An unexpected error happened`);
+          return;
+        }
+        if (res === 0) {
+          bot.sendMessage(
+            chatId,
+            `You were already susbcribed to one of the deposits of this signer, skipping it...`
+          );
+        }
+      });
+    });
+    bot.sendMessage(
+      chatId,
+      `Your deposits have been registered, we will send you an update if any of the deposits you are involved with ever fall below the first threshold (where it could get courtesy-called).`
+    );
   } catch (e) {
     bot.sendMessage(
       chatId,
-      "The address provided does not correspond to a tbtc deposit, aka it's not a correct TBT ID, please try again with a different address"
+      "The address provided does not correspond to a signer's address, please try again with a different address"
     );
-    return;
   }
-  // See https://redis.io/commands/sadd
-  redisClient.sadd(address, String(chatId), (err, res) => {
-    if (err) {
-      bot.sendMessage(chatId, `An unexpected error happened`);
-      return;
-    }
-    if (res === 0) {
-      bot.sendMessage(chatId, `You are already susbcribed to this deposit`);
-    } else {
-      bot.sendMessage(
-        chatId,
-        `Your deposit has been registered, we will send you an update if it ever falls below the first threshold (where it could get courtesy-called).`
-      );
-    }
-  });
 });
 
 // Matches "/unwatch 0x..."
@@ -101,7 +135,7 @@ bot.onText(/\/unwatch (.+)/, (msg, match) => {
   if (match === null) {
     bot.sendMessage(
       chatId,
-      "You must provide the ethereum address of the deposit to unwatch"
+      "You must provide the ethereum address of the signer to unwatch"
     );
     return;
   }
@@ -124,7 +158,7 @@ bot.onText(/\/unwatch (.+)/, (msg, match) => {
 });
 
 const instructions = `
-/watch {deposit_address} - Subscribe to undercollateralization alerts from a deposit
+/watch {signer_address} - Subscribe to undercollateralization alerts from the deposits associated with a signer
 eg: /watch 0xC309D0C7DC827ea92e956324F1e540eeA6e1AEaa
 /unwatch {deposit_address} - Unsubscribe to undercollateralization alerts from a deposit
 eg: /unwatch 0xC309D0C7DC827ea92e956324F1e540eeA6e1AEaa
@@ -159,7 +193,7 @@ ${instructions}`
   );
 });
 
-const interval = 10 * 60 * 1000; // 10 minutes
+const interval = 30 * 60 * 1000; // 30 minutes
 let iteratedValues: { [key: string]: undefined | true } = {}; // Used to avoid handling the same key twice, nodejs is singlethreaded so no need to deal with locks
 const iterateNext = (_: Error | null, [cursor, keys]: [string, string[]]) => {
   if (cursor !== "0") {
@@ -179,7 +213,7 @@ const iterateNext = (_: Error | null, [cursor, keys]: [string, string[]]) => {
           bot.sendMessage(
             Number(sub),
             `
-Deposit with address ${key} has entered the courtesy call state, action is required in the next 6 hours to prevent liquidation. See https://docs.keep.network/tbtc/index.html#pre-liquidation
+Deposit with TBT ID ${key} has entered the courtesy call state, action is required in the next 6 hours to prevent liquidation. See https://docs.keep.network/tbtc/index.html#pre-liquidation
 You have been automatically unsubscribed from this deposit in order avoid duplication of messages, if you'd like to subscribe again just send the following command:
 /watch ${key}`
           );

@@ -15,9 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "@keep-network/tbtc.js": "^0.18.0-rc.1",
+    "@types/node-fetch": "^2.5.7",
     "@types/node-telegram-bot-api": "^0.50.2",
     "@types/redis": "^2.8.25",
     "bn.js": "^5.1.3",
+    "node-fetch": "^2.6.1",
     "node-telegram-bot-api": "^0.50.0",
     "redis": "^3.0.2",
     "web3": "^1.2.11"
